@@ -1,0 +1,35 @@
+{
+	"schemaVersion": 1,
+	"id": "mctouchbar",
+	"version": "0.1.0-pre.2",
+
+	"name": "MCTouchBar",
+	"description": "MacBook Pro TouchBar integration for Minecraft.",
+	"authors": [
+		"MaximumFX"
+	],
+	"contact": {
+		"homepage": "https://maximumfx.nl/",
+		"sources": "https://github.com/MaximumFX/MCTouchBar",
+		"issues": "https://github.com/MaximumFX/MCTouchBar/issues"
+	},
+
+	"license": "CC0-1.0",
+	"icon": "assets/mctouchbar/icon.png",
+
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"nl.maximumfx.mctouchbar.MainClass"
+		]
+	},
+
+	"depends": {
+		"fabricloader": ">=0.7.4",
+		"fabric": "*",
+		"minecraft": "1.15.x"
+	},
+	"suggests": {
+		"flamingo": "*"
+	}
+}
