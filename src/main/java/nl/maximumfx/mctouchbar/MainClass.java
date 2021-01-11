@@ -9,7 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.command.arguments.BlockArgumentParser;
+import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ArrowItem;
 import net.minecraft.item.ItemStack;
@@ -81,7 +81,7 @@ public class MainClass implements ModInitializer {
 							active = Screens.getActive();
 							Logger.log(Level.DEBUG, active);
 							if (mcc.currentScreen == null) Logger.log(Level.INFO, "CS null");
-							else if (active == null) Logger.log(Level.INFO, mcc.currentScreen.getTitle().asFormattedString());
+							else if (active == null) Logger.log(Level.INFO, mcc.currentScreen.getTitle().asString());
 							if (active == Screens.INGAME || active == Screens.GAME_MENU) {
 								show(inGameTouchBar);
 							}

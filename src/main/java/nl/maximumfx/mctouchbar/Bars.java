@@ -12,6 +12,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.Perspective;
 import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -88,18 +89,18 @@ class Bars {
 		//</editor-fold>
 		//<editor-fold desc="Show hitboxes">
 		Logger.log(Level.INFO, "Creating show hit boxes button...");
-		TouchBarButton showHitboxes = new TBButton(toggle).setEnabled(mcc.getEntityRenderManager() != null && mcc.getEntityRenderManager().shouldRenderHitboxes()).setIcon(Icons.F3_SHOW_HITBOXES).setImagePosition(ImagePosition.ONLY).build();
+		TouchBarButton showHitboxes = new TBButton(toggle).setEnabled(mcc.getEntityRenderDispatcher() != null && mcc.getEntityRenderDispatcher().shouldRenderHitboxes()).setIcon(Icons.F3_SHOW_HITBOXES).setImagePosition(ImagePosition.ONLY).build();
 		showHitboxes.setAction(view -> {
 			if (showHitboxes.getTitle().equalsIgnoreCase("enabled")) {
 				showHitboxes.setTitle("disabled");
 				showHitboxes.setImage(Icons.F3_SHOW_HITBOXES.getDefaultIcon(false));
-				mcc.getEntityRenderManager().setRenderHitboxes(false);
+				mcc.getEntityRenderDispatcher().setRenderHitboxes(false);
 				mc.debugWarn("debug.show_hitboxes.off");
 			}
 			else {
 				showHitboxes.setTitle("enabled");
 				showHitboxes.setImage(Icons.F3_SHOW_HITBOXES.getDefaultIcon(false));
-				mcc.getEntityRenderManager().setRenderHitboxes(true);
+				mcc.getEntityRenderDispatcher().setRenderHitboxes(true);
 				mc.debugWarn("debug.show_hitboxes.on");
 			}
 		});
@@ -113,7 +114,7 @@ class Bars {
 			if (p != null) {
 				if (!mcc.player.getReducedDebugInfo()) {
 					mc.debugWarn("debug.copy_location.message");
-					mcc.keyboard.setClipboard(String.format(Locale.ROOT, "/execute in %s run tp @s %.2f %.2f %.2f %.2f %.2f", DimensionType.getId(mcc.player.world.dimension.getType()), mcc.player.getX(), mcc.player.getY(), mcc.player.getZ(), mcc.player.yaw, mcc.player.pitch));
+					mcc.keyboard.setClipboard(String.format(Locale.ROOT, "/execute in %s run tp @s %.2f %.2f %.2f %.2f %.2f", mcc.player.world.getDimension().toString(), mcc.player.getX(), mcc.player.getY(), mcc.player.getZ(), mcc.player.yaw, mcc.player.pitch));
 				}
 			}
 		});
@@ -185,7 +186,7 @@ class Bars {
 		TouchBarButton copyData = new TBButton(press).setTitle("Copy data").setIcon(Icons.F3_COPY_DATA).setImagePosition(ImagePosition.ONLY).build();
 		copyData.setAction(view -> {
 			if (mcc.player != null && !mcc.player.getReducedDebugInfo()) {
-				Helper.copyLookAt(mcc.player.allowsPermissionLevel(2), !Screen.hasShiftDown());
+				Helper.copyLookAt(mcc.player.hasPermissionLevel(2), !Screen.hasShiftDown());
 			}
 		});
 		buttons.put((inGame + "/f3_copy_data"), copyData);
@@ -195,7 +196,7 @@ class Bars {
 		TouchBarButton cycleGameMode = new TBButton(cycle).setTitle("Cycle gamemode").setIcon(Icons.F3_CYCLE_GAMEMODE).setImagePosition(ImagePosition.ONLY).build();
 		cycleGameMode.setAction(view -> {
 			if (mcc.player != null) {
-				if (!mcc.player.allowsPermissionLevel(2)) {
+				if (!mcc.player.hasPermissionLevel(2)) {
 					mc.debugWarn("debug.creative_spectator.error");
 				}
 				else if (mcc.player.isCreative()) {
@@ -339,17 +340,20 @@ class Bars {
 		TouchBarButton cycleCamera = new TBButton(cycle).setTitle("1").setIcon(Icons.CYCLE_CAMERA).setImagePosition(ImagePosition.ONLY).build();
 		cycleCamera.setAction(view -> {
 			final GameOptions options = mcc.options;
-			++options.perspective;
-			if (mcc.options.perspective > 2) {
-				mcc.options.perspective = 0;
+			switch (options.getPerspective()) {
+				case FIRST_PERSON: {
+					options.setPerspective(Perspective.THIRD_PERSON_BACK);
+					break;
+				}
+				case THIRD_PERSON_BACK: {
+					options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+					break;
+				}
+				case THIRD_PERSON_FRONT: {
+					options.setPerspective(Perspective.FIRST_PERSON);
+					break;
+				}
 			}
-			if (mcc.options.perspective == 0) {
-				mcc.gameRenderer.onCameraEntitySet(mcc.getCameraEntity());
-			}
-			else if (mcc.options.perspective == 1) {
-				mcc.gameRenderer.onCameraEntitySet(null);
-			}
-			mcc.worldRenderer.scheduleTerrainUpdate();
 		});
 		buttons.put((inGame + "/cycle_camera"), cycleCamera);
 		//</editor-fold>
